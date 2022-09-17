@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --bg: rgb(83, 83, 83);
+    --primary: rgb(253, 126, 255);
+}
+
+@font-face {
+    font-family: "fixedsys";
+    src: url("../font/FixedsysExcelsiorIIIb_PL3.otf");
+}
+
+* {
+    /* background-color: var(--bg); */
+    font-family: "fixedsys" !important;
+}
+
+.home {
+    background-color: var(--bg);
+    color: var(--primary);
+}
