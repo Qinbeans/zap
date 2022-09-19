@@ -5,6 +5,8 @@
 :root {
     --bg: rgb(83, 83, 83);
     --primary: rgb(253, 126, 255);
+    --secondary: rgb(191, 217, 239);
+    --tertiary: rgb(81, 46, 170);
 }
 
 @font-face {
@@ -13,11 +15,12 @@
 }
 
 * {
-    /* background-color: var(--bg); */
     font-family: "fixedsys" !important;
 }
 
-.home {
-    background-color: var(--bg);
-    color: var(--primary);
+.divider {
+    width: 90%;
+    border-top: 1px solid var(--primary);
+    border-color: var(--secondary);
+    margin: 1rem 5%;
 }

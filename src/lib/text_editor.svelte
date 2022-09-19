@@ -1,5 +1,6 @@
 <script lang="ts">
     import { AceEditor } from 'svelte-ace';
+    import { file as g_file } from '../ts/store';
     //import all themes and modes
     import 'brace/theme/ambiance';
     import 'brace/theme/chaos';
@@ -196,6 +197,8 @@
     export let fontSize = 14;
     export let tabSize = 4;
 
+
+
 </script>
 <div class="w-screen h-screen">
     <AceEditor
@@ -208,5 +211,11 @@
         }}
         width="100%"
         height="100%"
+        on:input={(obj) =>
+            g_file.update((val) => {
+                val.content = obj.detail;
+                return val;
+            })
+        }
     />
 </div>

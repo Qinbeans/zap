@@ -1,36 +1,34 @@
 <script lang="ts">
     import { Settings, File, themes } from '../ts/type'
-    import { settings as g_settings } from '../ts/store'
-    import { invoke } from '@tauri-apps/api/tauri';
+    import { settings as g_settings, file as g_file } from '../ts/store'
+    import { save } from '@tauri-apps/api/dialog'
+    import { writeFile } from '@tauri-apps/api/fs';
     
     export let show:boolean = false;
-    export let file:File = null;
+    let file:File = null;
+
+    g_file.subscribe(value => {
+        file = value;
+    })
 
     let settings: Settings;
     g_settings.subscribe((value) => {
         settings = value;
     });
     const select = (e) => {
-                        const value = (e.target as HTMLTextAreaElement).value
-                        g_settings.update((settings) => {
-                            settings.theme = value
-                            return settings
-                        })
-                    }
-    const name_file = (e) => {
-                        const value = (e.target as HTMLTextAreaElement).value
-                        g_settings.update((settings) => {
-                            settings.default_file.name = value
-                            return settings
-                        })
-                    }
-    const set_path = (e) => {
-                        const value = (e.target as HTMLTextAreaElement).value
-                        g_settings.update((settings) => {
-                            settings.default_file.name = value + settings.default_file.name
-                            return settings
-                        })
-                    }
+        const value = (e.target as HTMLTextAreaElement).value
+        g_settings.update((settings) => {
+            settings.theme = value
+            return settings
+        })
+    }
+    const change_font = (e) => {
+        const value = (e.target as HTMLTextAreaElement).value
+        g_settings.update((settings) => {
+            settings.font_size = parseInt(value)
+            return settings
+        })
+    }
 </script>
 {#if show}
     <div class="z-20 fixed w-1/6">
@@ -40,27 +38,7 @@
             }}>
                 Home
             </li>
-            {#if file==settings.default_file}
-                <li >
-                    <input
-                        class="w-full p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
-                        type="text"
-                        placeholder="/path/to/file"
-                        required
-                        on:change={set_path}
-                    >
-                </li>
-            {/if}
             <li >
-                <input
-                    class="w-full p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
-                    type="t0x52696365ext"
-                    placeholder="untitled"
-                    required
-                    on:change={name_file}
-                >
-            </li>
-            <li>
                 <select
                     class="w-full p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
                     name="theme"
@@ -77,22 +55,88 @@
                     {/each}
                 </select>
             </li>
+            <li class="p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700">
+                Font Size
+                <input class="text-center bg-transparent" type="number" value={settings.font_size} step="1" max="36" min="16" on:change={change_font}/>
+            </li>
             <li
                 class="p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
-                on:click={() => {
+                on:click={async () => {
                     console.log("Saving")
-                    if(file==null){
-                        alert('The file is too ambiguous')
-                    }
-                    invoke('save_file', {
-                        content: file.content,
-                        language: file.language,
-                        name: file.name
+                    await save({
+                        filters: [
+                            {
+                                name: "All Files",
+                                extensions: ["*"]
+                            }
+                        ]
                     }).catch((err) => {
                         console.log(err)
                     }).then((res) => {
-                        console.log(res)
+                        if (res) {
+                            g_file.update((val) => {
+                                let split = res.split("/")
+                                if(split.length == 1){
+                                    split = res.split("\\")
+                                }
+                                val.name = split.pop().split(".")[0]
+                                val.path = split.join("/") + "/"
+                                console.log(val)
+                                return file
+                            })
+                            writeFile(
+                                res,
+                                file.content
+                            ).catch((err) => {
+                                console.log(err)
+                            })
+                        }
                     })
+                }}
+            >
+                Save As
+            </li>
+            <li
+                class="p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
+                on:click={async () => {
+                    if(file.path.length > 0){
+                        writeFile(
+                            `${file.path}${file.name}.${file.language.extension}`,
+                            file.content
+                        ).catch((err) => {
+                            console.log(err)
+                        })
+                    }else{
+                        await save({
+                            filters: [
+                                {
+                                    name: "All Files",
+                                    extensions: ["*"]
+                                }
+                            ]
+                        }).catch((err) => {
+                            console.log(err)
+                        }).then((res) => {
+                            if (res) {
+                                g_file.update((val) => {
+                                    let split = res.split("/")
+                                    if(split.length == 1){
+                                        split = res.split("\\")
+                                    }
+                                    val.name = split.pop().split(".")[0]
+                                    val.path = split.join("/") + "/"
+                                    console.log(val)
+                                    return file
+                                })
+                                writeFile(
+                                    res,
+                                    file.content
+                                ).catch((err) => {
+                                    console.log(err)
+                                })
+                            }
+                        })
+                    }
                 }}
             >
                 Save

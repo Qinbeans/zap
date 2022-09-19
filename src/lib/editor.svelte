@@ -22,7 +22,7 @@
 </script>
 <div class="z-50 fixed {show?'w-1/5':'w-fit'}">
     <div class="w-full flex justify-center">
-        <Panel file={(file==null)?settings.default_file:file} show={show}/>
+        <Panel show={show}/>
     </div>
     <div class="flex">
         {#if show}
@@ -43,7 +43,7 @@
 </div>
 <TextEditor
     text={(file == null)?settings.default_file.content:file.content}
-    mode={(file == null)?settings.default_file.language:file.language}
+    mode={(file == null)?settings.default_file.language.id:file.language.id}
     theme={settings.theme}
     fontSize={settings.font_size}
     tabSize={settings.tab_size}
