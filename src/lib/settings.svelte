@@ -1,7 +1,6 @@
 <script lang="ts">
     import { open } from "@tauri-apps/api/dialog";
-    import { BaseDirectory, exists, writeFile } from "@tauri-apps/api/fs";
-    import { Z_PARTIAL_FLUSH } from "zlib";
+    import { BaseDirectory, createDir, exists, writeFile } from "@tauri-apps/api/fs";
     import { settings as g_setting } from "../ts/store";
     import { find_lang_by_name, languages, themes } from "../ts/type";
 
@@ -35,13 +34,26 @@
     const select_lang = (event) => {
         settings.default_file.language = find_lang_by_name((event.target as HTMLTextAreaElement).value);
     }
+    const change_file_name = (event) => {
+        settings.default_file.name = (event.target as HTMLTextAreaElement).value;
+    }
+    const change_file_content = (event) => {
+        settings.default_file.content = (event.target as HTMLTextAreaElement).value;
+    }
     const save = async () => {
+        await exists("zap",{
+            dir: BaseDirectory.Config
+        }).catch(async (err) => {
+            createDir("zap",{
+                dir: BaseDirectory.Config
+            });
+        });
         await writeFile({
             contents: JSON.stringify(settings),
             path: "zap/settings.json",
         },{
             dir: BaseDirectory.Config
-        }).catch((err) => {
+        }).then(() => alert("Saved")).catch((err) => {
             console.log(err);
         });
     }
@@ -141,13 +153,13 @@
                 <li>
                     <label for="file-name" class="w-2/12 text-2xl text-secondary">
                         File Name
-                        <input id="file-name" type="text" class="text-center bg-default rounded-md" value={settings.default_file.name}>
+                        <input id="file-name" type="text" class="text-center bg-default rounded-md" value={settings.default_file.name} on:change={change_file_name}>
                     </label>
                 </li>
                 <li>
                     <label for="file-content" class="w-2/12 text-2xl text-secondary">
                         File Content
-                        <textarea id="file-content" class="text-center bg-default rounded-md" value={settings.default_file.content} />
+                        <textarea id="file-content" class="bg-default rounded-md" value={settings.default_file.content} on:change={change_file_content}/>
                     </label>
                 </li>
             </ul>

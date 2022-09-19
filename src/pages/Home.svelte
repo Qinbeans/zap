@@ -1,6 +1,10 @@
 <script lang="ts">
     import '../assets/style.css'
     import { open } from '@tauri-apps/api/dialog';
+    import { invoke } from '@tauri-apps/api/tauri'; 
+    const quit = () => {
+        invoke('quit');
+    }
 </script>
 
 <div class="bg-default w-screen h-screen grid place-content-center text-center">
@@ -33,6 +37,9 @@
                 })
             }}>
                 Open File
+            </li>
+            <li class="p-1 bg-tertiary rounded-md cursor-pointer hover:bg-zinc-700" on:click={quit}>
+                Quit
             </li>
         </ul>
     </div>
