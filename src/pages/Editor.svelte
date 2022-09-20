@@ -9,6 +9,6 @@
     });
 </script>
 
-<div>
+<div class="bg-transparent">
     <Editor file={file}/>
 </div>

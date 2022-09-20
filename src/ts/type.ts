@@ -2,11 +2,13 @@ export class File {
     path: string;
     name: string;
     content: string;
-    language: Language
+    language: Language;
+    ext: number;
     //constructor
-    constructor(path: string, name: string, content: string, language: Language) {
+    constructor(path: string, name: string, ext: number, content: string, language: Language) {
         this.path = path;
         this.name = name;
+        this.ext = ext;
         this.content = content;
         this.language = language;
     }
@@ -703,6 +705,11 @@ export const find_lang_by_id = (id: string) => {
         return lang;
     }
     return languages.find((lang) => lang.id === "text");
+}
+
+export const find_ext_lang = (ext: string) => {
+    //get index of extension from languages
+    return find_lang_by_ext(ext).extension.indexOf(ext);
 }
 
 export const find_lang_by_name = (name: string) => {

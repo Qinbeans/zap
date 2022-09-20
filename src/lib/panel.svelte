@@ -33,9 +33,11 @@
 {#if show}
     <div class="z-20 fixed w-1/6">
         <ul class="flex flex-col gap-1">
-            <li class="p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700" on:click={() => {
-                window.location.href = '/'
-            }}>
+            <li class="p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
+                on:click={() => {
+                    window.location.href = '/'
+                }}
+            >
                 Home
             </li>
             <li >
@@ -100,8 +102,10 @@
                 class="p-1 text-blue-400 bg-indigo-700 rounded-md cursor-pointer text-center hover:bg-zinc-700"
                 on:click={async () => {
                     if(file.path.length > 0){
+                        let pathname = `${file.path}/${file.name}.${file.language.extension[file.ext]}`
+                        console.log(file, pathname)
                         writeFile(
-                            `${file.path}${file.name}.${file.language.extension}`,
+                            `${file.path}/${file.name}.${file.language.extension[file.ext]}`,
                             file.content
                         ).catch((err) => {
                             console.log(err)

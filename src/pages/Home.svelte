@@ -7,7 +7,7 @@
     }
 </script>
 
-<div class="bg-default w-screen h-screen grid place-content-center text-center">
+<div class="w-screen h-screen grid place-content-center text-center">
     <span class="text-4xl text-secondary">Welcome, Let's get started</span>
     <div class="divider "></div>
     <div class="flex justify-center">

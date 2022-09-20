@@ -4,7 +4,7 @@ import E404 from "./pages/E404.svelte";
 import Settings from "./pages/Settings.svelte";
 import { exists, createDir, readTextFile, BaseDirectory, writeFile } from '@tauri-apps/api/fs';
 import { file as g_file, settings } from './ts/store';
-import { File, find_lang_by_ext } from './ts/type';
+import { File, find_lang_by_ext, find_ext_lang } from './ts/type';
 
 //route
 //get the route
@@ -53,7 +53,10 @@ if (route === "/") {
   console.log(file);
   if(file !== null){
     //get extension and name
-    const split = file.split("/");
+    let split = file.split("/");
+    if(split.length < 2){
+      split = file.split("\\");
+    }
     const raw_file = split.pop();
     const path = split.join("/");
     const split2 = raw_file.split(".");
@@ -63,7 +66,7 @@ if (route === "/") {
     //get content
     readTextFile(file)
       .then((content) => {
-        g_file.set(new File(path, name, content, lang));
+        g_file.set(new File(path, name, find_ext_lang(ext), content, lang));
       })
       .catch((err) => {
         console.log(err);

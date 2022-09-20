@@ -5,7 +5,7 @@
     import FaSolidChevronRight from 'svelte-icons-pack/fa/FaSolidChevronRight';
     import FaSolidChevronLeft from 'svelte-icons-pack/fa/FaSolidChevronLeft';
     import { settings as g_settings } from '../ts/store';
-    import type { File, Settings } from '../ts/type';
+    import { languages, type File, type Settings } from '../ts/type';
 
     export let file: File = null;
 
@@ -18,6 +18,12 @@
         settings = value;
     });
     
+    if(settings.default_file != undefined && file != undefined){
+        if(file == null){
+            file = settings.default_file;
+        }
+        console.log(file);
+    }
 
 </script>
 <div class="z-50 fixed {show?'w-1/5':'w-fit'}">
@@ -42,8 +48,8 @@
     </div>
 </div>
 <TextEditor
-    text={(file == null)?settings.default_file.content:file.content}
-    mode={(file == null)?settings.default_file.language.id:file.language.id}
+    text={(file == null)?"" : file.content}
+    mode={(file.language == null)?"text" : file.language.id}
     theme={settings.theme}
     fontSize={settings.font_size}
     tabSize={settings.tab_size}
